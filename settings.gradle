@@ -12,6 +12,6 @@ dependencyResolutionManagement {
 		mavenCentral()
 	}
 }
-rootProject.name = "Ali_tts_manager"
+rootProject.name = "Ali_TTS_Manager"
 include ':app'
 include ':libalitts'
