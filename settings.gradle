@@ -4,9 +4,6 @@ pluginManagement {
 		google()
 		mavenCentral()
 		mavenLocal()
-		flatDir {
-			dirs 'libs'
-		}
 	}
 }
 dependencyResolutionManagement {
@@ -15,11 +12,9 @@ dependencyResolutionManagement {
 		google()
 		mavenCentral()
 		mavenLocal()
-		flatDir {
-			dirs 'libs'
-		}
 	}
 }
 rootProject.name = "Ali_TTS_Manager"
 include ':app'
 include ':libalitts'
+include ':aar_alitts'

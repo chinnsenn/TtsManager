@@ -1,9 +1,10 @@
 plugins {
 	id 'com.android.library'
 	id 'org.jetbrains.kotlin.android'
-	id 'maven-publish'
 	id 'com.kezong.fat-aar'
 }
+
+apply from: "../publish.gradle"
 
 android {
 	compileSdk 30
@@ -13,7 +14,7 @@ android {
 		//noinspection ExpiringTargetSdkVersion
 		targetSdk 30
 		versionCode 1
-		versionName "1.0"
+		versionName "0.0.3"
 
 		testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 	}
@@ -32,48 +33,6 @@ android {
 		jvmTarget = '1.8'
 	}
 }
-// 1. 增加上传源码的task
-task sourceJar(type: Jar) {
-	from android.sourceSets.main.java.srcDirs
-	archiveClassifier = "sources"
-}
-
-publishing {
-	// 配置maven 仓库
-	repositories { RepositoryHandler handler->
-		handler.mavenLocal()  // 发布到默认的 本地maven 仓库 ，路径： USER_HOME/.m2/repository/
-	}
-	// 配置发布产物
-	publications {PublicationContainer publication->
-		// 名称可以随便定义，这里定义成 maven，是因为我的 aar 包是发布到 maven 仓库的，所以这里为了见名知义，定义成了 maven
-		// 任务名称：maven
-		maven(MavenPublication) {// 容器可配置的信息 MavenPublication
-			artifact sourceJar // 增加上传源码的 task
-			// 依赖 bundleReleaseAar 任务，并上传其产出的aar
-			afterEvaluate { artifact(tasks.getByName("bundleReleaseAar")) } // 方式一：生成aar包
-			// artifact "$buildDir/outputs/aar/${project.name}-release.aar" // 方式二：指定生成的aar路径
-			groupId = "com.chinnsenn.tts"
-			artifactId = "alitts"
-			version = "0.0.1"
-
-			// pom文件中声明依赖，从而传递到使用方
-			pom.withXml {
-				def dependenciesNode = asNode().appendNode('dependencies')
-				configurations.implementation.allDependencies.each {
-					// 避免出现空节点或 artifactId=unspecified 的节点
-					if (it.group != null && (it.name != null && "unspecified" != it.name) && it.version != null) {
-						println "dependency=${it.toString()}"
-						def dependencyNode = dependenciesNode.appendNode('dependency')
-						dependencyNode.appendNode('groupId', it.group)
-						dependencyNode.appendNode('artifactId', it.name)
-						dependencyNode.appendNode('version', it.version)
-						dependencyNode.appendNode('scope', 'implementation')
-					}
-				}
-			}
-		}
-	}
-}
 
 fataar {
 	/**
@@ -85,15 +44,8 @@ fataar {
 	 */
 	transitive = true
 }
-
 dependencies {
-//	implementation fileTree(dir: 'libs', include: ['*.jar'])
-//	implementation fileTree(dir: 'libs', include: ['*.aar'])
-
-	embed files('libs/nuisdk-release.aar')
-	implementation "com.google.code.gson:gson:2.9.1"
-	implementation 'com.jakewharton.timber:timber:5.0.1'
-	testImplementation 'junit:junit:4.13.2'
-	testImplementation "com.google.truth:truth:1.1.3"
-	androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+	embed project(':aar_alitts')
+	embed "com.google.code.gson:gson:2.9.1"
+	embed 'com.jakewharton.timber:timber:5.0.1'
 }
