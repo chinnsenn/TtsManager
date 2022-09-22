@@ -3,6 +3,10 @@ pluginManagement {
 		gradlePluginPortal()
 		google()
 		mavenCentral()
+		mavenLocal()
+		flatDir {
+			dirs 'libs'
+		}
 	}
 }
 dependencyResolutionManagement {
@@ -10,6 +14,10 @@ dependencyResolutionManagement {
 	repositories {
 		google()
 		mavenCentral()
+		mavenLocal()
+		flatDir {
+			dirs 'libs'
+		}
 	}
 }
 rootProject.name = "Ali_TTS_Manager"
