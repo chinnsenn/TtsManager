@@ -7,7 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.fragment.findNavController
+import android.widget.Toast
 import com.chinnsenn.ali_tts_manager.databinding.FragmentFirstBinding
 import com.chinnsenn.libalitts.TtsManager
 import com.chinnsenn.libalitts.entity.InitializationProfile
@@ -18,6 +18,36 @@ import com.chinnsenn.libalitts.listeners.ITokenProvider
  */
 @Suppress("DEPRECATION")
 class FirstFragment : Fragment() {
+
+	private var ttsManager : TtsManager? = null
+
+	private val sdkListener = object : TtsManager.SDKListener {
+		override fun onInitSuccess() {
+			requireActivity().runOnUiThread {
+				showToast("SDK 初始化成功")
+			}
+		}
+
+		override fun onInitializing() {
+			requireActivity().runOnUiThread {
+				showToast("SDK 初始化中")
+			}
+		}
+
+		override fun onInitFailed() {
+			requireActivity().runOnUiThread {
+				showToast("SDK 初始化失败")
+			}
+		}
+
+		override fun onError(error: String) {
+
+		}
+	}
+
+	private fun showToast(text: String) {
+		Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT).show()
+	}
 
 	private var _binding: FragmentFirstBinding? = null
 
@@ -39,26 +69,29 @@ class FirstFragment : Fragment() {
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
 
-		binding.buttonFirst.setOnClickListener {
-			findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
-		}
-
-		val ttsManager = TtsManager.Builder(requireContext())
+		ttsManager = TtsManager.Builder(requireContext())
 			.setInitProfile(InitializationProfile().apply {
 				this.workspace = requireContext().getExternalFilesDir(Environment.DIRECTORY_MUSIC)?.absolutePath
-				this.deviceId = "12839012890d"
+				this.deviceId = android.os.Build.SERIAL
+				this.appKey = "LoWsVU4GwidCOul7"
 			})
-			.setTokenProvider(object : ITokenProvider{
+			.setTokenProvider(object : ITokenProvider {
 				override fun getToken(callback: ITokenProvider.OnTokenResultCallback) {
-					callback.onSuccess("7c64af37fe47463e84ca58e3c6b875ba")
+					callback.onSuccess("65c947776cd24232b74b4e4ddfbfc750")
 				}
-
 			})
+			.setSdkListener(sdkListener)
 			.build()
+
+		binding.buttonFirst.setOnClickListener {
+			ttsManager?.startTTS("本样例展示离线语音合成使用方法，1）设置鉴权信息：按照鉴权认证文档获取注册信息，并调用接口tts_initialize进行设置；2)将下载好的语音包设置给SDK；3）开始合成")
+		}
+
 	}
 
 	override fun onDestroyView() {
 		super.onDestroyView()
 		_binding = null
+		ttsManager?.release()
 	}
 }
