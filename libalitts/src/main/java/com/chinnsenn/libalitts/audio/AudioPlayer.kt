@@ -117,6 +117,22 @@ class AudioPlayer {
 		mIsFinishSendData = true
 	}
 
+	fun pause() {
+		mAudioState = AudioPlayState.STATE_PAUSE
+		mAudioPlayListener?.onPause()
+		mAudioTrack?.apply {
+			pause()
+		}
+	}
+
+	fun reseume() {
+		mAudioState = AudioPlayState.STATE_RESUME
+		mAudioPlayListener?.onResume()
+		mAudioTrack?.apply {
+			reseume()
+		}
+	}
+
 	fun stop() {
 		mAudioState = AudioPlayState.STATE_STOP
 		mAudioPlayListener?.onStop()
@@ -140,7 +156,9 @@ class AudioPlayer {
 		STATE_NO_READY,
 		STATE_READY,
 		STATE_PLAY,
-		STATE_STOP
+		STATE_STOP,
+		STATE_RESUME,
+		STATE_PAUSE
 	}
 
 	interface AudioPlayListener {
@@ -148,6 +166,10 @@ class AudioPlayer {
 		fun onStart()
 
 		fun onStop()
+
+		fun onResume()
+
+		fun onPause()
 
 		fun onError(error: String)
 	}

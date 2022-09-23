@@ -48,7 +48,7 @@ class TtsManager @Throws(Exception::class) private constructor(builder: Builder)
 
 	private var isInit = false
 
-	private var isEnable = true
+	private var enable = true
 
 	init {
 		if (BuildConfig.DEBUG) {
@@ -83,8 +83,8 @@ class TtsManager @Throws(Exception::class) private constructor(builder: Builder)
 
 	fun getContext() = mContext
 
-	private fun checkInit(block :() -> Unit) {
-		if (!isEnable) {
+	private fun checkInit(block: () -> Unit) {
+		if (!enable) {
 			return
 		}
 		if (isInit) {
@@ -118,6 +118,7 @@ class TtsManager @Throws(Exception::class) private constructor(builder: Builder)
 	fun cancelTTS() {
 		checkInit {
 			mNativeNui?.cancelTts("")
+			mAudioPlayer?.stop()
 		}
 	}
 
@@ -132,11 +133,13 @@ class TtsManager @Throws(Exception::class) private constructor(builder: Builder)
 			if (!enable) {
 				cancelTTS()
 			}
-			this.isEnable = enable
 		}
+		this.enable = enable
 	}
 
-	fun isEnable() = isEnable
+	fun isEnable(): Boolean {
+		return this.enable
+	}
 
 	fun release() {
 		mNativeNui?.tts_release()
@@ -210,7 +213,7 @@ class TtsManager @Throws(Exception::class) private constructor(builder: Builder)
 
 					}
 					INativeTtsCallback.TtsEvent.TTS_EVENT_RESUME -> {
-
+						it.mAudioPlayer?.reseume()
 					}
 					INativeTtsCallback.TtsEvent.TTS_EVENT_END -> {
 						it.mAudioPlayer?.finishSendData()
@@ -219,7 +222,7 @@ class TtsManager @Throws(Exception::class) private constructor(builder: Builder)
 						it.mAudioPlayer?.stop()
 					}
 					INativeTtsCallback.TtsEvent.TTS_EVENT_PAUSE -> {
-
+						it.mAudioPlayer?.pause()
 					}
 					INativeTtsCallback.TtsEvent.TTS_EVENT_ERROR -> {
 						it.mAudioPlayer?.stop()
@@ -249,7 +252,7 @@ class TtsManager @Throws(Exception::class) private constructor(builder: Builder)
 
 		fun onInitFailed()
 
-		fun onError(error:String)
+		fun onError(error: String)
 	}
 
 }
