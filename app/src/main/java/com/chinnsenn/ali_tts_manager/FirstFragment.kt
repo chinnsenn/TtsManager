@@ -73,11 +73,9 @@ class FirstFragment : Fragment() {
 			.setInitProfile(InitializationProfile().apply {
 				this.workspace = requireContext().getExternalFilesDir(Environment.DIRECTORY_MUSIC)?.absolutePath
 				this.deviceId = android.os.Build.SERIAL
-				this.appKey = "LoWsVU4GwidCOul7"
 			})
 			.setTokenProvider(object : ITokenProvider {
 				override fun getToken(callback: ITokenProvider.OnTokenResultCallback) {
-					callback.onSuccess("65c947776cd24232b74b4e4ddfbfc750")
 				}
 			})
 			.setSdkListener(sdkListener)

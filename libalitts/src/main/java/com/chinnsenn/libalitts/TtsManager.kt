@@ -54,11 +54,11 @@ class TtsManager @Throws(Exception::class) private constructor(builder: Builder)
 		if (BuildConfig.DEBUG) {
 			Timber.plant(Timber.DebugTree())
 		}
-		this.mContext = builder.context
-		this.mInitProfile = builder.initializationProfile
-		this.mSDKListener = builder.sdkListener
+		this.mContext = builder.getContext()
+		this.mInitProfile = builder.getInitializationProfile()
+		this.mSDKListener = builder.getSdkListener()
 		this.mInitProfile?.workspace = CommonUtils.getModelPath(mContext);
-		this.mTokenProvider = builder.tokenProvider
+		this.mTokenProvider = builder.getTokenProvider()
 		this.mExecutor = Executors.newSingleThreadExecutor()
 		this.mAudioPlayer = AudioPlayer()
 		this.mCustomCallback = TtsNuiNativeCallback(this)
@@ -109,7 +109,9 @@ class TtsManager @Throws(Exception::class) private constructor(builder: Builder)
 
 	fun resumeTTS() {
 		checkInit {
-			mNativeNui?.resumeTts()
+			mNativeNui?.apply {
+				resumeTts()
+			}
 		}
 	}
 
@@ -151,10 +153,10 @@ class TtsManager @Throws(Exception::class) private constructor(builder: Builder)
 	}
 
 	class Builder(context: Context) {
-		var context: Context? = context
-		var initializationProfile: InitializationProfile? = null
-		var tokenProvider: ITokenProvider? = null
-		var sdkListener: SDKListener? = null
+		private var context: Context? = context
+		private var initializationProfile: InitializationProfile? = null
+		private var tokenProvider: ITokenProvider? = null
+		private var sdkListener: SDKListener? = null
 
 		fun setInitProfile(initializationProfile: InitializationProfile) =
 			apply { this.initializationProfile = initializationProfile }
@@ -168,6 +170,14 @@ class TtsManager @Throws(Exception::class) private constructor(builder: Builder)
 		fun build(): TtsManager {
 			return TtsManager(this)
 		}
+
+		fun getContext() = context
+
+		fun getInitializationProfile() = initializationProfile
+
+		fun getTokenProvider() = tokenProvider
+
+		fun getSdkListener() = sdkListener
 	}
 
 	class TtsNuiNativeCallback(tsManager: TtsManager) : InitializationTask.CustomNuiNativeCallback {

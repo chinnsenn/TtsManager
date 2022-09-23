@@ -27,7 +27,7 @@ afterEvaluate {
 				afterEvaluate { artifact(tasks.getByName("bundleReleaseAar")) } // 方式一：生成aar包
 				groupId = 'com.chinnsenn'
 				artifactId = 'alitts'
-				version = '0.0.4'
+				version = '0.0.5'
 
 //				from components.release
 				// generate pom.xml
