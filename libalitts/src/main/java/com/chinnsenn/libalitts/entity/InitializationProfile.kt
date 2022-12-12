@@ -1,7 +1,6 @@
 package com.chinnsenn.libalitts.entity
 
 import com.alibaba.idst.nui.Constants
-import com.chinnsenn.libalitts.BuildConfig
 import com.google.gson.annotations.SerializedName
 
 /**
@@ -22,12 +21,14 @@ class InitializationProfile {
 	var deviceId: String? = null
 
 	@Transient
-	var logLevel: Constants.LogLevel = if (BuildConfig.DEBUG) Constants.LogLevel.LOG_LEVEL_VERBOSE else Constants.LogLevel.LOG_LEVEL_NONE
+	var logLevel: Constants.LogLevel = Constants.LogLevel.LOG_LEVEL_NONE
 
 	@Transient
-	var saveLog = BuildConfig.DEBUG
+	var saveLog = false
 
 	fun checkParameter(): Boolean {
 		return token.isNullOrEmpty()
 	}
+
+	fun isPrintLog() = logLevel < Constants.LogLevel.LOG_LEVEL_NONE
 }

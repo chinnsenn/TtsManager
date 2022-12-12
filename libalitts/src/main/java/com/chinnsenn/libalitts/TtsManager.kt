@@ -51,9 +51,6 @@ class TtsManager @Throws(Exception::class) private constructor(builder: Builder)
 	private var enable = true
 
 	init {
-		if (BuildConfig.DEBUG) {
-			Timber.plant(Timber.DebugTree())
-		}
 		this.mContext = builder.getContext()
 		this.mInitProfile = builder.getInitializationProfile()
 		this.mSDKListener = builder.getSdkListener()
@@ -62,6 +59,9 @@ class TtsManager @Throws(Exception::class) private constructor(builder: Builder)
 		this.mExecutor = Executors.newSingleThreadExecutor()
 		this.mAudioPlayer = AudioPlayer()
 		this.mCustomCallback = TtsNuiNativeCallback(this)
+		if (this.mInitProfile?.isPrintLog() == true) {
+			Timber.plant(Timber.DebugTree())
+		}
 		mSDKListener?.onInitializing()
 		if (CommonUtils.copyAssetsData(mContext)) {
 			Timber.d("copy assets data done")
